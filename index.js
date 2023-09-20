@@ -12,7 +12,7 @@ const dbPath = path.join(__dirname, "patterns.db");
 let db = null;
 
 const corsOptions = {
-  origin: "*",
+  origin: "http://localhost:3000",
   methods: "GET,POST",
 };
 app.use(cors(corsOptions));
@@ -21,7 +21,7 @@ async function initializeDbAndServer() {
   try {
     db = await open({ filename: dbPath, driver: sqlite3.Database });
     const corsOptions = {
-      origin: "*",
+      origin: "http://localhost:3000",
       methods: "GET,POST",
     };
     app.use(cors(corsOptions));
