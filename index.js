@@ -62,10 +62,19 @@ app.post("/postcode", async (request, response) => {
 
     const postPatternsQuery = `
     INSERT INTO patterns (id, code_type, code_description, code_hint, code_input, code_output, code)
-    VALUES ('${id}','${code_type}', '${code_description}', '${code_hint}', '${code_input}', '${code_output}', '${code}');
+    VALUES (?, ?, ?, ?, ?, ?, ?);
     `;
 
-    await db.run(postPatternsQuery);
+    await db.run(postPatternsQuery, [
+      id,
+      code_type,
+      code_description,
+      code_hint,
+      code_input,
+      code_output,
+      code,
+    ]);
+
     response
       .status(201)
       .json({ success: true, message: "Submitted Successfully" });
