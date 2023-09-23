@@ -4,44 +4,37 @@ const path = require("path");
 const { open } = require("sqlite");
 const sqlite3 = require("sqlite3");
 const cors = require("cors");
+require("dotenv").config();
 
 app.use(express.json());
 
-const dbPath = path.join(__dirname, "patterns.db");
+const dbPath = process.env.DB_PATH || path.join(__dirname, "patterns.db");
 
 let db = null;
 
-const corsOptions = {
-  origin: "http://localhost:3000",
-  methods: "GET,POST",
-};
-app.use(cors(corsOptions));
+app.use(cors());
 
 async function initializeDbAndServer() {
   try {
     db = await open({ filename: dbPath, driver: sqlite3.Database });
-    const corsOptions = {
-      origin: "http://localhost:3000",
-      methods: "GET,POST",
-    };
-    app.use(cors(corsOptions));
 
-    app.listen(4000, () => {
-      console.log("Server Started Running");
+    app.listen(process.env.PORT || 4000, () => {
+      console.log(`Server Started Running on port ${process.env.PORT || 4000}`);
     });
   } catch (e) {
     console.log(`DB Error : ${e.message}`);
     process.exit(1);
   }
 }
+
 initializeDbAndServer();
 
 app.get("/", async (request, response) => {
   try {
-    const getAllPatternsSquery = `
+    const getAllPatternsQuery = `
     SELECT * FROM patterns`;
 
-    const data = await db.all(getAllPatternsSquery);
+    const data = await db.all(getAllPatternsQuery);
     response.status(200).json({ success: true, data });
   } catch (error) {
     response.status(500).json({ success: false, error: "Server error" });
