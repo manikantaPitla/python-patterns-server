@@ -28,7 +28,7 @@ async function initializeDbAndServer() {
 }
 
 initializeDbAndServer();
-
+// GET ALL PATTERNS
 app.get("/", async (request, response) => {
   try {
     const getAllPatternsQuery = `
@@ -41,7 +41,8 @@ app.get("/", async (request, response) => {
   }
 });
 
-app.post("/postcode", async (request, response) => {
+// POST CODE
+app.post("/postcode/", async (request, response) => {
   try {
     const {
       id,
@@ -73,5 +74,44 @@ app.post("/postcode", async (request, response) => {
       .json({ success: true, message: "Submitted Successfully" });
   } catch (error) {
     response.status(500).json({ error: "An error occurred while Submitting" });
+  }
+});
+
+// UPDATE CODE
+app.put("/updateCode/:codeId/", async (request, response) => {
+  try {
+    const { codeId } = request.params;
+    const { codeOption, codeValue } = request.body;
+
+    const updateCodeQuery = `
+      UPDATE patterns
+      SET ${codeOption} = ?
+      WHERE id = ?`;
+
+    await db.run(updateCodeQuery, codeValue, codeId);
+    response
+      .status(201)
+      .json({ success: true, message: "Updated Successfully" });
+  } catch (error) {
+    response.status(500).json({ error: "An error occurred while Updating" });
+  }
+});
+
+// DELETE CODE
+app.delete("/deleteCode/:codeId/", async (request, response) => {
+  try {
+    const { codeId } = request.params;
+
+    const deleteCodeQuery = `
+        DELETE FROM patterns
+        
+        WHERE id = ?`;
+
+    await db.run(deleteCodeQuery, codeId);
+    response
+      .status(201)
+      .json({ success: true, message: "Deleted Successfully" });
+  } catch (error) {
+    response.status(500).json({ error: "An error occurred while Deleting" });
   }
 });
