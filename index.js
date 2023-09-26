@@ -83,15 +83,22 @@ app.put("/updateCode/:codeId/", async (request, response) => {
     const { codeId } = request.params;
     const { codeOption, codeValue } = request.body;
 
-    const updateCodeQuery = `
+    const checkIdQuery = `SELECT * FROM patterns WHERE id = ?`;
+    const dbResponse = await db.get(checkIdQuery, codeId);
+    console.log(dbResponse);
+    if (dbResponse !== undefined) {
+      const updateCodeQuery = `
       UPDATE patterns
       SET ${codeOption} = ?
       WHERE id = ?`;
 
-    await db.run(updateCodeQuery, codeValue, codeId);
-    response
-      .status(201)
-      .json({ success: true, message: "Updated Successfully" });
+      await db.run(updateCodeQuery, codeValue, codeId);
+      response
+        .status(201)
+        .json({ success: true, message: "Updated Successfully" });
+    } else {
+      response.status(400).json({ error: "Invalid Unique Id" });
+    }
   } catch (error) {
     response.status(500).json({ error: "An error occurred while Updating" });
   }
@@ -102,16 +109,23 @@ app.delete("/deleteCode/:codeId/", async (request, response) => {
   try {
     const { codeId } = request.params;
 
-    const deleteCodeQuery = `
+    const checkIdQuery = `SELECT * FROM patterns WHERE id = ?`;
+    const dbResponse = await db.get(checkIdQuery, codeId);
+    console.log(dbResponse);
+    if (dbResponse !== undefined) {
+      const deleteCodeQuery = `
         DELETE FROM patterns
-        
         WHERE id = ?`;
 
-    await db.run(deleteCodeQuery, codeId);
-    response
-      .status(201)
-      .json({ success: true, message: "Deleted Successfully" });
+      await db.run(deleteCodeQuery, codeId);
+      response
+        .status(201)
+        .json({ success: true, message: "Deleted Successfully" });
+    } else {
+      response.status(400).json({ error: "Invalid Unique Id" });
+    }
   } catch (error) {
+    console.log(error);
     response.status(500).json({ error: "An error occurred while Deleting" });
   }
 });
