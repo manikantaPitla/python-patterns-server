@@ -111,7 +111,6 @@ app.delete("/deleteCode/:codeId/", async (request, response) => {
 
     const checkIdQuery = `SELECT * FROM patterns WHERE id = ?`;
     const dbResponse = await db.get(checkIdQuery, codeId);
-    console.log(dbResponse);
     if (dbResponse !== undefined) {
       const deleteCodeQuery = `
         DELETE FROM patterns
@@ -125,7 +124,6 @@ app.delete("/deleteCode/:codeId/", async (request, response) => {
       response.status(400).json({ error: "Invalid Unique Id" });
     }
   } catch (error) {
-    console.log(error);
     response.status(500).json({ error: "An error occurred while Deleting" });
   }
 });
